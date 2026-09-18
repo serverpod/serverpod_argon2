@@ -1,4 +1,4 @@
-include: package:serverpod_lints/cli.yaml
+include: package:serverpod_lints/public.yaml
 
 analyzer:
   language:
