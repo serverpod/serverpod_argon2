@@ -1,3 +1,11 @@
-# https://dart.dev/tools/private-files
-# Created by `dart pub`
 .dart_tool/
+
+# A library: consumers resolve their own versions.
+pubspec.lock
+
+# Prebuilt native libraries. tool/build_binaries.dart fills this before
+# publishing. They ship on pub.dev and are not committed.
+/binary/
+
+/.zig-cache/
+/zig-out/

@@ -1,0 +1,7 @@
+# .pubignore replaces .gitignore for publishing, so everything from
+# .gitignore except binary/ is repeated here. binary/ carries the prebuilt
+# libraries and must ship.
+/.dart_tool/
+/.zig-cache/
+/zig-out/
+pubspec.lock
