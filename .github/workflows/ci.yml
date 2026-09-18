@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  zig_test:
+    name: Zig test vectors
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Reads the version from build.zig.zon's minimum_zig_version.
+      - uses: mlugg/setup-zig@v2
+      - run: zig build test --summary all
+
+  dart_format_analyze:
+    name: Dart format and analyze
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1.7.1
+      - run: dart pub get
+      - run: dart format --output=none --set-exit-if-changed .
+      - run: dart analyze --fatal-infos
+
+  # A checkout has no binary/, so the build hook compiles with zig. This
+  # exercises the source build on every host OS.
+  dart_test:
+    name: Dart test (${{ matrix.os }}, Dart ${{ matrix.dart }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        dart: ['3.10', stable]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mlugg/setup-zig@v2
+      - uses: dart-lang/setup-dart@v1.7.1
+        with:
+          sdk: ${{ matrix.dart }}
+      - run: dart pub get
+      - run: dart test -p vm
+      - if: matrix.os == 'ubuntu-latest'
+        run: dart test -p chrome
+      - if: matrix.os == 'ubuntu-latest'
+        run: dart test -p chrome -c dart2wasm
