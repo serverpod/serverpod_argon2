@@ -157,9 +157,9 @@ void main() {
     },
   );
 
-  test('Given the same password hashed twice, '
-      'when comparing the PHC strings, '
-      'then they differ because each hash gets a fresh salt', () {
+  test('Given no salt is supplied, '
+      'when hashing the same password twice, '
+      'then the PHC strings differ because each hash gets a fresh salt', () {
     const parameters = Argon2Parameters(iterations: 1, memoryKiB: 64);
 
     final first = argon2.hash('password', parameters: parameters);
@@ -228,9 +228,9 @@ void main() {
     );
   });
 
-  test('Given argon2i with a 48 byte hash length, '
-      'when hashing and verifying the password, '
-      'then the PHC string records argon2i and verification succeeds', () {
+  test('Given argon2i parameters with a 48 byte hash length, '
+      'when hashing a password, '
+      'then the PHC string records argon2i and a 48 byte hash', () {
     final encoded = argon2.hash(
       'password',
       parameters: const Argon2Parameters(
@@ -241,12 +241,50 @@ void main() {
       ),
     );
 
-    expect(encoded, startsWith(r'$argon2i$v=19$m=64,t=1,p=1$'));
+    expect(
+      encoded,
+      matches(
+        RegExp(
+          r'^\$argon2i\$v=19\$m=64,t=1,p=1'
+          r'\$[A-Za-z0-9+/]{22}\$[A-Za-z0-9+/]{64}$',
+        ),
+      ),
+    );
+  });
+
+  test('Given an argon2i hash with a 48 byte hash length, '
+      'when verifying the right password, '
+      'then verification succeeds', () {
+    final encoded = argon2.hash(
+      'password',
+      parameters: const Argon2Parameters(
+        type: Argon2Type.argon2i,
+        iterations: 1,
+        memoryKiB: 64,
+        hashLength: 48,
+      ),
+    );
+
     expect(argon2.verify('password', encoded), isTrue);
   });
 
-  test('Given an empty password, '
-      'when hashing and verifying it, '
+  test('Given a hash made with parallelism 4, '
+      'when verifying the right password, '
+      'then verification succeeds', () {
+    final encoded = argon2.hash(
+      'password',
+      parameters: const Argon2Parameters(
+        iterations: 1,
+        memoryKiB: 64,
+        parallelism: 4,
+      ),
+    );
+
+    expect(argon2.verify('password', encoded), isTrue);
+  });
+
+  test('Given a hash of an empty password, '
+      'when verifying the empty password, '
       'then verification succeeds', () {
     final encoded = argon2.hash(
       '',
@@ -342,9 +380,9 @@ void main() {
     testOn: 'browser',
   );
 
-  test('Given two loads, '
-      'when comparing the instances, '
-      'then the same instance is returned', () async {
+  test('Given the Argon2 module, '
+      'when loading it twice, '
+      'then both loads return the same instance', () async {
     expect(await Argon2.load(), same(await Argon2.load()));
   });
 }
