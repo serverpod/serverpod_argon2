@@ -150,16 +150,26 @@ final class Argon2 {
   /// [Argon2Exception] when the memory cannot be allocated.
   bool verify(String password, String encodedHash, {List<int>? secret}) {
     final expected = PhcHash.decode(encodedHash);
+    final parameters = Argon2Parameters(
+      type: expected.type,
+      iterations: expected.iterations,
+      memoryKiB: expected.memoryKiB,
+      parallelism: expected.parallelism,
+      hashLength: expected.hash.length,
+    );
+    // Well-formed, but outside what Argon2 accepts, so still not a valid
+    // Argon2 hash.
+    try {
+      parameters._validate();
+      _checkRange(expected.salt.length, 8, _maxUint32, 'salt length');
+    } on RangeError catch (error) {
+      throw FormatException('Invalid Argon2 hash: $error', encodedHash);
+    }
+
     final actual = deriveKey(
       password: utf8.encode(password),
       salt: expected.salt,
-      parameters: Argon2Parameters(
-        type: expected.type,
-        iterations: expected.iterations,
-        memoryKiB: expected.memoryKiB,
-        parallelism: expected.parallelism,
-        hashLength: expected.hash.length,
-      ),
+      parameters: parameters,
       secret: secret,
     );
     return _constantTimeEquals(actual, expected.hash);

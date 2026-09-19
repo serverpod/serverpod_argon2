@@ -307,6 +307,24 @@ void main() {
     ('padded base64', r'$argon2id$v=19$m=64,t=1,p=1$c29tZXNhbHQ=$AAAAAA'),
     ('URL-safe base64', r'$argon2id$v=19$m=64,t=1,p=1$c29tZXNhbHQ$AA-_AA'),
     ('a trailing field', r'$argon2id$v=19$m=64,t=1,p=1$c29tZXNhbHQ$AAAAAA$'),
+    (
+      'memory above 2^32 - 1 KiB',
+      r'$argon2id$v=19$m=4294967296,t=1,p=1$c29tZXNhbHQ$AAAAAA',
+    ),
+    (
+      'iterations above 2^32 - 1',
+      r'$argon2id$v=19$m=64,t=4294967296,p=1$c29tZXNhbHQ$AAAAAA',
+    ),
+    (
+      'parallelism above 2^24 - 1',
+      r'$argon2id$v=19$m=64,t=1,p=16777216$c29tZXNhbHQ$AAAAAA',
+    ),
+    (
+      'less than 8 KiB of memory per lane',
+      r'$argon2id$v=19$m=31,t=1,p=4$c29tZXNhbHQ$AAAAAA',
+    ),
+    ('a 7 byte salt', r'$argon2id$v=19$m=64,t=1,p=1$c29tZXNhbA$AAAAAA'),
+    ('a 3 byte hash', r'$argon2id$v=19$m=64,t=1,p=1$c29tZXNhbHQ$AAAA'),
   ]) {
     test('Given a PHC string with $description, '
         'when verifying a password against it, '
