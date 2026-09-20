@@ -143,7 +143,8 @@ Future<void> zigBuild({
     throw ProcessException(
       zig,
       args,
-      'zig build failed:\n${result.stdout}\n${result.stderr}',
+      'zig build failed with exit code ${result.exitCode}:\n'
+      '${result.stdout}\n${result.stderr}',
       result.exitCode,
     );
   }
