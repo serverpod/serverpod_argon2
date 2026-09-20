@@ -98,7 +98,7 @@ final class NativeTarget {
       packageRoot: packageRoot,
       zigTriple: zigTriple,
       prefix: prefix,
-      cacheDirectory: cacheDirectory,
+      cacheRoot: cacheDirectory,
     );
     final built = File.fromUri(
       prefix.resolve('$_installSubdirectory/$libraryName'),
@@ -111,11 +111,13 @@ final class NativeTarget {
 }
 
 /// Runs `zig build` for [zigTriple], installing into [prefix].
+///
+/// [cacheRoot] (if set) holds zig caches.
 Future<void> zigBuild({
   required Uri packageRoot,
   required String zigTriple,
   required Uri prefix,
-  Uri? cacheDirectory,
+  Uri? cacheRoot,
 }) async {
   final zig = await _zigExecutable(packageRoot);
   final args = [
@@ -125,7 +127,12 @@ Future<void> zigBuild({
     '-Dstrip=true',
     '-p',
     prefix.toFilePath(),
-    if (cacheDirectory != null) ...['--cache-dir', cacheDirectory.toFilePath()],
+    if (cacheRoot != null) ...[
+      '--cache-dir',
+      cacheRoot.resolve('local/').toFilePath(),
+      '--global-cache-dir',
+      cacheRoot.resolve('global/').toFilePath(),
+    ],
   ];
   final result = await Process.run(
     zig,
