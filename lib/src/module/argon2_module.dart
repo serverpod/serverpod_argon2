@@ -28,7 +28,9 @@ abstract interface class Argon2Module {
     int outLength,
   );
 
-  /// A live view of module memory. On wasm, memory growth detaches earlier
-  /// views, so use the view before the next [alloc] or [kdf].
-  Uint8List view(int address, int length);
+  /// Copies [bytes] into module memory at [address].
+  void write(int address, List<int> bytes);
+
+  /// Copies [length] bytes of module memory at [address] into the Dart heap.
+  Uint8List read(int address, int length);
 }

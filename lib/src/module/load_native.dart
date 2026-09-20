@@ -66,7 +66,14 @@ final class _NativeArgon2Module implements Argon2Module {
   );
 
   @override
-  Uint8List view(int address, int length) =>
+  void write(int address, List<int> bytes) =>
+      _bytes(address, bytes.length).setAll(0, bytes);
+
+  @override
+  Uint8List read(int address, int length) =>
+      Uint8List.fromList(_bytes(address, length));
+
+  Uint8List _bytes(int address, int length) =>
       Pointer<Uint8>.fromAddress(address).asTypedList(length);
 }
 

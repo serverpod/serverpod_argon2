@@ -215,7 +215,7 @@ final class Argon2 {
       );
       if (status != 0) throw Argon2Exception(_describeStatus(status));
 
-      return Uint8List.fromList(_module.view(out.address, out.length));
+      return _module.read(out.address, out.length);
     } finally {
       buffers.freeAll();
     }
@@ -264,7 +264,7 @@ final class _Buffers {
   _Buffer copy(List<int> bytes) {
     if (bytes.isEmpty) return (address: 0, length: 0);
     final buffer = allocate(bytes.length);
-    _module.view(buffer.address, buffer.length).setAll(0, bytes);
+    _module.write(buffer.address, bytes);
     return buffer;
   }
 

@@ -67,7 +67,16 @@ final class _WebArgon2Module implements Argon2Module {
   );
 
   @override
-  Uint8List view(int address, int length) =>
+  void write(int address, List<int> bytes) =>
+      _bytes(address, bytes.length).setAll(0, bytes);
+
+  @override
+  Uint8List read(int address, int length) =>
+      Uint8List.fromList(_bytes(address, length));
+
+  // Growing the module's memory detaches earlier views, so every call reads
+  // the buffer again.
+  Uint8List _bytes(int address, int length) =>
       JSUint8Array(_exports.memory.buffer, address, length).toDart;
 }
 
