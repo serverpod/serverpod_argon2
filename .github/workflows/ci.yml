@@ -26,13 +26,21 @@ jobs:
       - run: dart analyze --fatal-infos
 
   # A checkout has no binary/, so the build hook compiles with zig. This
-  # exercises the source build on every host OS.
+  # exercises the source build on every host OS with a runner. windows-11-arm
+  # has one, but zig build exits 1 there with nothing on either stream,
+  # whether the hook or the shell runs it, so the source build cannot be
+  # tested on it. The publish smoke test covers the prebuilt arm64 DLL.
   dart_test:
     name: Dart test (${{ matrix.os }}, Dart ${{ matrix.dart }})
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os:
+          - ubuntu-latest
+          - ubuntu-24.04-arm
+          - macos-latest
+          - macos-26-intel
+          - windows-latest
         dart: ['3.10', stable]
     runs-on: ${{ matrix.os }}
     steps:
