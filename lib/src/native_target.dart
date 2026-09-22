@@ -13,7 +13,10 @@ final class NativeTarget {
     this.iOSSdk,
   });
 
+  /// The operating system this target builds for.
   final OS os;
+
+  /// The CPU architecture this target builds for.
   final Architecture architecture;
 
   /// Only set for iOS, where device and simulator need separate libraries.
@@ -23,6 +26,7 @@ final class NativeTarget {
   /// OS version, matching Flutter's deployment targets.
   final String zigTriple;
 
+  /// Every target with a prebuilt library.
   static final all = [
     const NativeTarget._(OS.macOS, Architecture.arm64, 'aarch64-macos.11.0'),
     const NativeTarget._(OS.macOS, Architecture.x64, 'x86_64-macos.10.15'),
@@ -78,6 +82,7 @@ final class NativeTarget {
     return '${os.name}-${architecture.name}$simulator';
   }
 
+  /// The file name of the library on this target's operating system.
   String get libraryName => switch (os) {
     OS.macOS || OS.iOS => 'libserverpod_argon2.dylib',
     OS.windows => 'serverpod_argon2.dll',

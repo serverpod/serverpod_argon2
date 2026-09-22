@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:code_assets/code_assets.dart';
 import 'package:hooks/hooks.dart';
 
-import 'native_target.dart';
+import 'package:serverpod_argon2/src/native_target.dart';
 
 /// Bundles the native library for the target being built.
 ///

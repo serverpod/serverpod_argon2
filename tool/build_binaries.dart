@@ -9,7 +9,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import '../hook/native_target.dart';
+import 'package:serverpod_argon2/src/native_target.dart';
 
 Future<void> main() async {
   final packageRoot = File.fromUri(Platform.script).parent.parent.uri;
